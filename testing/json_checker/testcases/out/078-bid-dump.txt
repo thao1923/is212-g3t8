@@ -1,0 +1,11 @@
+{
+    "status": "success",
+    "bids": [
+        {
+            "row": 1,
+            "userid": "zac.ng.2009",
+            "amount": 11.22,
+            "result": "in"
+        }
+    ]
+}
