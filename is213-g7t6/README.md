@@ -15,3 +15,5 @@ python libraries required for programme to work:
 	- pip install passlib (password hashing library)
 	- pip install mailjet_rest
 
+Walkthrough video: https://www.youtube.com/watch?v=TRd5nLzBYO8&feature=youtu.be
+
