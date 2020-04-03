@@ -1,0 +1,150 @@
+
+{% extends "layout.html" %}
+{% block title %}Cart{% endblock %}
+{% block loggedin %} 
+
+<li class="nav-item"><a class="nav-link" href="http://localhost:8000/search_flights">Search Flights</a></li>
+<li class="nav-item"><a class="nav-link" href="http://localhost:8000/manage">My Bookings</a></li>
+<li class="nav-item"><a class="nav-link" href="http://localhost:8000/logout">Logout</a></li>
+
+{% endblock %}
+{% block content %}
+
+    <div class="hero-wrap js-fullheight" style="background-image: url('/static/images/bg_1.jpg');">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-start" data-scrollax-parent="true">
+          <div class="col-md-9 ftco-animate mb-5 pb-5 text-center text-md-left" data-scrollax=" properties: { translateY: '70%' }">
+            <h1 class="mb-4" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">My Cart</h1>
+            <p data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Confirm your booking details<br/> before checking out with us!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="ftco-section ftco-cart">
+			<div class="container">
+				<div class="row">
+    			<div class="col-md-12 ftco-animate">
+    				<div class="cart-list">
+	    				<table class="table" id="cartTable">
+						    <thead class="thead-primary">
+						      <tr class="text-center">
+								<th>Depart Date</th>
+								<th>Depart Time</th>
+								<th>Flight Number</th>
+								<th>Reference Code</th>
+								<th>Price</th>
+						      </tr>
+						    </thead>
+						    <tbody>
+						      <tr class="text-center">
+
+						      </tr>
+
+						      <tr class="text-center">
+
+						      </tr>
+						    </tbody>
+						  </table>
+					  </div>
+					  <form id='confirmBookingForm'>
+        				<div class="fields">
+		              	<div class="form-group">
+		                	<input type="submit" value="Confirm and Pay" class="btn btn-primary py-3 px-5"  style="margin:auto;display:block")>
+		              	</div>
+		            	</div>
+	            	</form>
+    			</div>
+    		</div>
+    	
+
+{% endblock %}
+
+{% block scripts %}
+  <script>
+	    // Helper function to display error message
+  function showError(message) {
+    // Display an error under the the predefined label with error as the id
+    $('#error').text(message);
+  }
+
+	refCode=sessionStorage.getItem('refCode');
+
+	async function getBookingData(getBookingURL) {
+		try {
+
+			const booking_response =
+                await fetch(
+                	getBookingURL, {
+                    method: 'GET'  });
+
+            const booking_data = await booking_response.json();
+            if (booking_response.ok) {
+				var booking = booking_data.booking; 
+				var date = new Date(booking.departDate);
+				var day = date.getDate();
+				var month = date.getMonth();
+				var year = date.getFullYear();
+				var departDate = sessionStorage.getItem('departDate', departDate)
+
+				sessionStorage.setItem('price', booking.price);
+
+				
+
+				foundBooking =
+                        "<tbody>" +
+                        "<tr class='text-center'>" +
+                        "<td>" + departDate + "</td>" +
+                        "<td>" + booking.deptTime + "</td>" +
+                        "<td>" + booking.flightNo + "</td>" +
+                        "<td>" + booking.refCode + "</td>" +
+						"<td>" + booking.price + "</td>" +
+                        "</tr>" +
+                        "<tbody>";
+
+				$('#cartTable tbody').empty();
+				$('#cartTable').append(foundBooking);
+
+				
+				
+
+                
+            } else {
+                showError(booking_data.message);
+            }
+	} catch (error) {
+		console.error(error);
+	}
+	}
+
+	$(function() { 
+		var getBookingURL = "http://localhost:5000/booking/" + refCode;
+		getBookingData(getBookingURL).refCode;
+	});
+
+	$("#confirmBookingForm").submit(async (event) => {
+		event.preventDefault();
+		try {
+			window.location.href = 'paypal';
+    	} catch (error) {
+      	// Errors when calling the service; such as network error,
+      	// service offline, etc
+		  console.log(error);
+      		showError("There is a problem adding this book, please try again later. " + error);
+
+    	} // error
+  	});
+
+
+	
+	
+
+
+
+  </script>
+{% endblock %}
+	
+    
+  </body>
+</html>

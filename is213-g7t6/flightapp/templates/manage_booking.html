@@ -1,0 +1,173 @@
+{% extends "layout.html" %}
+{% block title %}Manage Booking{% endblock %}
+{% block loggedin %} 
+
+<li class="nav-item"><a class="nav-link" href="http://localhost:8000/search_flights">Search Flights</a></li>
+<li class="nav-item"><a class="nav-link" href="http://localhost:8000/manage">My Bookings</a></li>
+<li class="nav-item"><a class="nav-link" href="http://localhost:8000/logout">Logout</a></li>
+
+{% endblock %}
+{% block content %}
+<div class="hero-wrap js-fullheight" style="background-image: url('/static/images/bg_1.jpg');">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-start"
+         data-scrollax-parent="true">
+      <div class="col-md-9 ftco-animate mb-5 pb-5 text-center text-md-left"
+           data-scrollax=" properties: { translateY: '70%' }">
+        <h1 class="mb-4" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">My Bookings</h1>
+        <p data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Manage your bookings & Check in!<br/> View
+          your Boarding Pass here!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="ftco-section ftco-cart">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 ftco-animate">
+        <div class="cart-list">
+          <table class="table" id="myBookingsTable">
+            <thead class="thead-primary">
+            <tr class="text-center">
+              <th>Ref. Code</th>
+              <th>Flight No</th>
+              <th>Departure</th>
+              <th>Arrival</th>
+              <th>Departure Date</th>
+              <th>Departure Time</th>
+              <th>Arrival Time</th>
+              <th>Status / Seat Number</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  
+  // sessionStorage.setItem('pid', 'pid_0004');
+  pid = sessionStorage.getItem('pid');
+
+  async function getFlightCode() {
+    flightURL = "http://localhost:5001/getFlightCode";
+    try {
+      // get flight details of departure flight
+      const response_dep =
+         await fetch(
+          flightURL, {method: 'GET'}
+        );
+      const flights = await response_dep.json();
+      if (response_dep.ok) {
+        flights_details = flights
+        flight_dict = {}
+        for (flight in flights_details){
+          flight_code = flights_details[flight].code
+          flight_dict[flight_code] = flights_details[flight].name;
+        }
+        return flight_dict;
+
+      }
+    } catch (e) {
+        console.log(e)
+    }
+  }
+
+  let bookingURl = `http://localhost:5000/booking/${pid}`;
+
+  async function getMyBookingsData(bookingURL) {
+    try {
+      // get flight details of departure flight
+      const response_dep =
+        await fetch(
+          bookingURL, {method: 'GET'}
+        );
+      const bookings = await response_dep.json();
+      codes = await getFlightCode();
+      if (response_dep.ok) {
+        let rows = "";
+        for (const booking of bookings) {
+          flightNo = booking.flightNo
+          flight_info = await getFlightInfo(flightNo)
+
+          departCountry = flight_info.departDest
+          departCountry = codes[departCountry]
+          arrivalCountry = flight_info.arrivalDest
+          arrivalCountry = codes[arrivalCountry]
+          var date = new Date(booking.departDate);
+          var day = date.getDate();
+          var month = date.getMonth();
+          var year = date.getFullYear();
+          var departDate = day + '-' + month + '-' + year
+            // let arrivalCountry = airportCodes.`${booking.arrivalDest}`;
+          if (booking.seat_number == null || booking.seat_number == ""){
+            seat_num_row = `<td><button id="checkIn" onclick="checkIn(${booking.refCode})">Check In</button></td>`
+          }else{
+            seat_num_row ="<td>" + booking.seat_number + "</td>"
+          }
+          let eachRow = "<tr style=text-align:center>" 
+                        + "<td>" + booking.refCode + "</td>"
+                        + "<td>" + flightNo + "</td>"
+                        + "<td>" + departCountry + "</td>"
+                        + "<td>" + arrivalCountry + "</td>"
+                        + "<td>" + departDate + "</td>"
+                        + "<td>" + flight_info.deptTime + "</td>"
+                        + "<td>" + flight_info.arrivalTime + "</td>"
+                        + seat_num_row
+                        + "</tr>";
+            rows += eachRow;
+          
+        }
+        $('#myBookingsTable tbody').empty();
+        $('#myBookingsTable').append(rows);
+      } else {
+        console.log("error");
+        // showError(data_dep.message);
+      }
+    } catch (error) {
+      // Errors when calling the service; such as network error,
+      // service offline, etc
+      // showError
+      // ('There is a problem retrieving books data, please try again later.<br />' + error);
+    }
+  }
+
+  getMyBookingsData(bookingURl);
+
+  function checkIn(refCode) {
+    window.location.href = `http://localhost:5000/booking/checkin/${refCode}`;
+  }
+
+  async function getFlightInfo(flightNo){
+    flightURL = `http://localhost:5001/flight/${flightNo}`
+    try {
+      // get flight details of departure flight
+      const response =
+        await fetch(
+          flightURL, {method: 'GET'}
+        );
+      const flight = await response.json();
+      if (response.ok) {
+        flight_details = flight['flight']
+        return flight_details
+      }
+    } catch (e) {
+        console.log(e)
+    }
+  }
+</script>
+
+
+<!--    <div class="row">-->
+<!--      <div class="col-md-12 text-center">-->
+{% endblock %}
