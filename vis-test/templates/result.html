@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="colorlib.com">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet" />
+    <link href="/static/css/main.css" rel="stylesheet" />
+    <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+  </head>
+  <body style="background: url('../static/images/sea.jpg');background-size: cover;">
+    <div class="s02" style="margin: 10px;">
+        <fieldset>
+          <legend style="font-size: 30px;line-height: 1;font-family: 'Poppins', sans-serif; line-height: 1;color: #fff;">Result
+          <img id="img" src=""/> 
+        </legend>
+        </fieldset>
+    </div>
+    <hr>
+    <div class="s03" style="margin: 20px;">
+      <img src="../static/images/63a7dd82aae04b80cd6f0fb387b25f6a.jpg" style="width: 30%;height: 30%; margin: 10px;">
+      <img src="../static/images/904b9a4920ca402fb509c0d5611a7305-01.jpg" style="width: 30%;height: 30%; margin: 10px;">
+      <img src="../static/images/inforgraphic-03-2-15680228358641251892608.jpg" style="width: 30%;height: 30%; margin: 10px;">
+    <script>
+      filename = {{filename | tojson}}
+      $('#img').attr('src', `/static/uploads/${filename}`).width(200).height(150).css('vertical-align', 'middle');
+    </script>
+</body>
+</html>

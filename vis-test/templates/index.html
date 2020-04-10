@@ -6,22 +6,37 @@
     <meta name="author" content="colorlib.com">
     <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet" />
     <link href="/static/css/main.css" rel="stylesheet" />
+    <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+    <script src="{{ url_for('static', filename='upload.js') }}"></script>
   </head>
   <body>
-    <div class="s01">
-      <form>
+    <div class="s01" style="text-align: center;">
+      <form id="searchimg" enctype="multipart/form-data" action="http://localhost:8000/uploads" method="POST" onsubmit = "myValidation();">
         <fieldset>
           <legend>Find Images</legend>
         </fieldset>
-        <div class="inner-form">
-          <div class="input-field first-wrap">
-            <input id="search" type="text" placeholder="What are you looking for?" />
-          </div>
-          <div class="input-field third-wrap">
-            <button class="btn-search" type="button">Search</button>
-          </div>
+        <div class="form-group" >
+            <div class="btn btn-primary btn-file">
+                <p style="color: aliceblue;">Browse <input type="file" id="fileupload" name="file" multiple onchange='readURL(this);' /></p>
+                  <img id="img" src=""/> 
+            </div>
+            <div class="input-field third-wrap">
+              <input type="submit" style="background-color: blueviolet;border: none;color: aliceblue;font-size: 15px; padding: 10px 25px;cursor: pointer;font-family: 'Poppins', sans-serif;border-radius: 25px;margin-top: 10px;" value="Search">
+            </div>    
         </div>
       </form>
     </div>
+    <script>
+      function myValidation(){
+        const input = document.querySelector('#fileupload') ;
+        if(input.files.length == 0){
+          alert("No selected image");
+          event.preventDefault()
+          return false;
+        }
+        return true;
+      }
+    </script>
   </body><!-- This templates was made by Colorlib (https://colorlib.com) -->
 </html>
