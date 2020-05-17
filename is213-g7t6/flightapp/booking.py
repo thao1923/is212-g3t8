@@ -10,7 +10,9 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flight_admin:6kKVm7C2PHtVtgGT@esd-g7t6-rds.cs2kfkrucphj.ap-southeast-1.rds.amazonaws.com:3306/flight_booking'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flight_admin:6kKVm7C2PHtVtgGT@esd-g7t6-rds.cs2kfkrucphj.ap-southeast-1.rds.amazonaws.com:3306/flight_booking'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flight_admin:6kKVm7C2PHtVtgGT@esd-g7t6.cakxlnvku8py.ap-southeast-1.rds.amazonaws.com:3306/flight_booking'
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 1800}
@@ -22,9 +24,6 @@ flightURL = 'http://localhost:5001/flight/receive_choice'
 passengerURL = 'http://localhost:5002'
 pricingURL = 'http://localhost:5003/pricing/receive'
 billingURL = 'http://localhost:5004/billing'
-
-# TODO communication between Booking microservice and Booking UI
-# TODO communication between Booking microservice and Paypal API
 
 class Booking(db.Model):
 
@@ -63,17 +62,6 @@ class Booking(db.Model):
             "meal": self.meal,
             "seat_number": self.seat_number
         }
-
-# booking = {
-#     "baggage": 2,
-#     "class_type": "short_economy",
-#     "departDate": "Sun, 15 Mar 2020 00:00:00 GMT",
-#     "flightNo": "200",
-#     "meal": 1,
-#     "pid": "pid_0002",
-#     "price": 128,
-#     "refCode": 5
-#     }
 
 
 @app.route("/booking")
@@ -133,28 +121,34 @@ def assign_seat_for_booking(refCode):
     return jsonify(booking.json()), 200 
 
 
-@app.route("/booking/filter", methods=['POST'])
-def get_booking_by_flightCode_date():
+# @app.route("/booking/filter", methods=['POST'])
+# def get_booking_by_flightCode_date():
     
-    data = request.get_json()
-    print(data)
-    flightCode = data["flightCode"]
-    date = data["date"]
-    # print(f'flightCode: {flightCode}')
-    # print(f'date: {date}')
+#     data = request.get_json()
+#     print(data)
+#     flightCode = data["flightCode"]
+#     date = data["date"]
+#     # print(f'flightCode: {flightCode}')
+#     # print(f'date: {date}')
     
+#     selected_booking = Booking.query.filter_by(flightNo=flightCode, departDate=date).all()
+#     # for b in selected_booking:
+#     #     print(b.departDate)
+#     #     print(type(b.departDate)) # <class 'datetime.date'>
+    
+#     if selected_booking:
+#         return jsonify([booking.json() for booking in selected_booking]), 200
+
+#     return jsonify([]), 201 # return empty list 
+
+#     # return jsonify({"message": "Bookings not found."}), 404
+
+@app.route("/booking/codedate/<string:flightCode>/<string:date>")
+def get_booking_by_flightcode_date(flightCode, date):
     selected_booking = Booking.query.filter_by(flightNo=flightCode, departDate=date).all()
-    # for b in selected_booking:
-    #     print(b.departDate)
-    #     print(type(b.departDate)) # <class 'datetime.date'>
-    
     if selected_booking:
         return jsonify([booking.json() for booking in selected_booking]), 200
-
     return jsonify([]), 201 # return empty list 
-
-    # return jsonify({"message": "Bookings not found."}), 404
-    
 
 @app.route("/booking/create", methods=['POST'])
 def create_booking():
@@ -167,8 +161,6 @@ def create_booking():
     class_type = data['class_type']
     baggage = data['baggage']
     meal = data['meal']
-
-    # base_price = choose_flight(flightNo)['basePrice']
 
     add_on_price = get_price(meal, baggage, class_type)
     meal_price = add_on_price['meal_price']
@@ -229,33 +221,33 @@ def get_booking_by_refCode(refCode):
 
 
 
-# @app.route("/booking/confirm", methods=['POST'])
-# def booking_confirm():
-#     data = request.get_json()
+@app.route("/booking/confirm", methods=['POST'])
+def booking_confirm():
+    data = request.get_json()
     
-#     refCode = data['refCode']
-#     pid = data['pid']
-#     flightNo = data['flightNo']
-#     departDate = data['departDate']
-#     class_type = data['class_type']
-#     baggage = data['baggage']
-#     meal = data['meal']
-#     price = data['price']
+    refCode = data['refCode']
+    pid = data['pid']
+    flightNo = data['flightNo']
+    departDate = data['departDate']
+    class_type = data['class_type']
+    baggage = data['baggage']
+    meal = data['meal']
+    price = data['price']
 
-#     send_price = json.loads(json.dumps(
-#         {"refCode":refCode, "pid":pid, 
-#         "flightNo":flightNo, "departDate":departDate,
-#         "price":price, "class_type":class_type, 
-#         "baggage":baggage,"meal":meal}, 
-#         default = str))
-#     r = requests.post(billingURL, json = send_price)
-#     return r.text
-
-@app.route("/booking/confirm/<string:price>/<string:refCode>", methods=['GET'])
-def booking_confirm(price, refCode):
-    send_price = json.loads(json.dumps({"price" : price, "refCode":refCode} , default = str))
+    send_price = json.loads(json.dumps(
+        {"refCode":refCode, "pid":pid, 
+        "flightNo":flightNo, "departDate":departDate,
+        "price":price, "class_type":class_type, 
+        "baggage":baggage,"meal":meal}, 
+        default = str))
     r = requests.post(billingURL, json = send_price)
     return r.text
+
+# @app.route("/booking/confirm/<string:price>/<string:refCode>", methods=['GET'])
+# def booking_confirm(price, refCode):
+#     send_price = json.loads(json.dumps({"price" : price, "refCode":refCode} , default = str))
+#     r = requests.post(billingURL, json = send_price)
+#     return r.text
  
 
 @app.route("/booking/status", methods=['OPTIONS'])
@@ -277,23 +269,17 @@ def get_status():
 
 
 @app.route("/booking/checkin/<string:refCode>", methods=['GET'])
-def create_checkin_status(refCode):
+def get_checkin_message(refCode):
     # data = request.get_json()
     # refCode = data['refCode']
     ls = ['yes', 'no']
-    status = random.choice(ls)
+    status = random.choice(ls) # randomise checkin status
+    print(status)
     if status == 'yes':
         seat = assign_seat_for_booking(refCode)
 
     return render_template("checkin.html", refCode = refCode, status = status)
 
-@app.route("/booking/boarding/<string:refCode>", methods=['GET'])
-def get_boarding(refCode):
-    return render_template("boarding.html", refCode = refCode)
-
-# @app.route("/manage")
-# def manage_booking(): 
-#     return render_template("manage_booking.html")
 
 
 '''
@@ -304,7 +290,7 @@ COMMUNICATION TECHNOLOGIES AMQP
 '''
 
 # get booking details by booking reference code
-@app.route("/booking/message/<int:refCode>")
+
 def create_message(refCode):
     booking = Booking.query.filter_by(refCode=refCode).first()
     if booking:
@@ -348,7 +334,4 @@ def send_booking(message):
     connection.close()
 
 if __name__ == "__main__":
-    # this part i still hardcoded bc need to get passenger id when logged in from frontend but frontend not up yet
-    # booking = create_booking_for_notification('pid_0004')
-    # send_booking(booking)
     app.run(host="0.0.0.0", port=5000, debug=True)

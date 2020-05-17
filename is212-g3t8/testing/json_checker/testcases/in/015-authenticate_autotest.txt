@@ -1,2 +1,0 @@
-username=wrongben.ng.2009
-password=qwerty129

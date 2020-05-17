@@ -8,8 +8,8 @@ import json
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flight_admin:6kKVm7C2PHtVtgGT@esd-g7t6-rds.cs2kfkrucphj.ap-southeast-1.rds.amazonaws.com:3306/flight_pricing'
-
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flight_admin:6kKVm7C2PHtVtgGT@esd-g7t6-rds.cs2kfkrucphj.ap-southeast-1.rds.amazonaws.com:3306/flight_pricing'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flight_admin:6kKVm7C2PHtVtgGT@esd-g7t6.cakxlnvku8py.ap-southeast-1.rds.amazonaws.com:3306/flight_pricing'
 # set dbURL=mysql+mysqlconnector://root@localhost:3306/book
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -130,12 +130,12 @@ def get_mealobj_by_meal_id(meal_id):
         return jsonify(meal.json())
     return jsonify({"message": "Couldn't find meal"}), 404
 
-@app.route("/pricing/getmeal/<string:meal_desc>")
-def get_mealobj_by_meal_desc(meal_desc):
-    meal = Meal.query.filter_by(meal_desc=meal_desc).first()
-    if meal:
-        return jsonify(meal.json())
-    return jsonify({"message": "Couldn't find meal"}), 404
+# @app.route("/pricing/getmeal/<string:meal_desc>")
+# def get_mealobj_by_meal_desc(meal_desc):
+#     meal = Meal.query.filter_by(meal_desc=meal_desc).first()
+#     if meal:
+#         return jsonify(meal.json())
+#     return jsonify({"message": "Couldn't find meal"}), 404
 
 @app.route("/getbaggage")
 def get_baggage():
@@ -148,12 +148,12 @@ def get_baggageobj_by_baggage_id(baggage_id):
         return jsonify(baggage.json())
     return jsonify({"message": "Couldn't find baggage"}), 404
 
-@app.route("/pricing/getbaggage/<string:baggage_desc>")
-def get_baggageobj_by_baggage_desc(baggage_desc):
-    baggage = Baggage.query.filter_by(baggage_desc=baggage_desc).first()
-    if baggage:
-        return jsonify(baggage.json())
-    return jsonify({"message": "Couldn't find baggage"}), 404
+# @app.route("/pricing/getbaggage/<string:baggage_desc>")
+# def get_baggageobj_by_baggage_desc(baggage_desc):
+#     baggage = Baggage.query.filter_by(baggage_desc=baggage_desc).first()
+#     if baggage:
+#         return jsonify(baggage.json())
+#     return jsonify({"message": "Couldn't find baggage"}), 404
 
 
 

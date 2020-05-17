@@ -1,9 +1,0 @@
-{
-    "status": "success",
-    "students": [
-        {
-            "userid": "ben.ng.2009",
-            "amount": 18.2
-        }
-    ]
-}

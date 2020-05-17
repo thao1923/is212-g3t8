@@ -1,1 +1,0 @@
-r={"userid":"zac.ng.2009","course":"IS400", "section":"S1"}

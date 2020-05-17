@@ -1,7 +1,0 @@
-{
-    "status": "error",
-    "message": [
-        "no vacancy",
-        "section limit reached"
-    ]
-}

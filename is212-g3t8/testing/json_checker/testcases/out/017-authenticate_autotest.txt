@@ -1,4 +1,0 @@
-{
-    "status": "error",
-    "message": "Username is incorrect"
-}
